@@ -6,10 +6,8 @@ public class FunkyMotion : MonoBehaviour
 {
     public float x;
     public float y;
-    public float z;
     public float amplitude;
     public float frequency;
-    public float dt;
     public float time;
 
     void FixedUpdate()
@@ -18,11 +16,12 @@ public class FunkyMotion : MonoBehaviour
         // We want a fixed time-step to ensure our physics engine is stable!
         //Debug.Log(dt);
         
-        dt = Time.fixedDeltaTime;
+        float dt = Time.fixedDeltaTime;
 
-        z = Mathf.Sin(time);
+        // Example of frequency (faster/slower time) & amplitude (min/max)
+        float z = 0.0f;// Mathf.Sin(time * 10.0f) * 5.0f;
 
-        // Move our object based on custom motion!
+        // Homework 1: modify x and y to use sin & cos as indicated in the document!
         transform.position = new Vector3(x, y, z);
 
         time += dt;
