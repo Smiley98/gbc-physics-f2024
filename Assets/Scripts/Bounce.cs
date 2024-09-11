@@ -21,8 +21,7 @@ public class Bounce : MonoBehaviour
         transform.position = new Vector3(0.0f, pos, 0.0f);
 
         // Homework:
-        // if ball is under the ground:
-        //      -set ball position to initial height
-        //      -set ball velocity to zero
+        // if ball is below the ground:
+        //      -negate ball velocity, causing it to bounce!
     }
 }
