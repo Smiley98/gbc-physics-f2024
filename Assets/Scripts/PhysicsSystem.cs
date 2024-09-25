@@ -29,6 +29,9 @@ public class PhysicsSystem
         // so we'll store it as a uniform acceleration for all objects
         Vector3 acc = gravity;
 
+        // Apply drag to velocity
+        testBody.vel *= Mathf.Pow(testBody.drag, dt);
+
         // "New velocity is equal to old velocity + change in velocity" (a * t)
         testBody.vel = testBody.vel + acc * dt;
 
