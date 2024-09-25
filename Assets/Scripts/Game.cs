@@ -10,7 +10,8 @@ public class Game : MonoBehaviour
         physicsSystem.testBody = new PhysicsBody();
 
         // Test body's initial settings
-        physicsSystem.testBody.pos = new Vector3(0.0f, 1.0f, 0.0f);
+        physicsSystem.testBody.pos = new Vector3(0.0f, 1.0f, -1.0f);
+        physicsSystem.testBody.vel = new Vector3(0.0f, 10.0f, 0.0f);
     }
 
     void FixedUpdate()
@@ -22,6 +23,8 @@ public class Game : MonoBehaviour
 
     void OnDrawGizmos()
     {
+        // (Once we switch to physicsSystem.bodies, the null error will go away
+        // since it gets populated at runtime)
         Gizmos.DrawSphere(physicsSystem.testBody.pos, 1.0f);
     }
 

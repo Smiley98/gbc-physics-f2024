@@ -18,8 +18,21 @@ public class PhysicsSystem
 
     public void Step(float dt)
     {
-        Debug.Log("Desired update frequency: " + Time.fixedDeltaTime);
-        Debug.Log("Actual update frequency: " + dt);
-        Debug.Log("Total time: " + time);
+        // Time information:
+        //Debug.Log("Desired update frequency: " + Time.fixedDeltaTime);
+        //Debug.Log("Actual update frequency: " + dt);
+        //Debug.Log("Total time: " + time);
+
+        // TODO -- apply motion (acceleration, velocity, position) to list of bodies instead of just testBody
+
+        // Right now, our only acceleration is due to gravity,
+        // so we'll store it as a uniform acceleration for all objects
+        Vector3 acc = gravity;
+
+        // "New velocity is equal to old velocity + change in velocity" (a * t)
+        testBody.vel = testBody.vel + acc * dt;
+
+        // "New position is equal to old position + change in position" (v * t)
+        testBody.pos = testBody.pos + testBody.vel * dt;
     }
 }
