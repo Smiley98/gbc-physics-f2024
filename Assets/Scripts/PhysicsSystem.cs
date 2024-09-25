@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class PhysicsSystem
 {
@@ -7,6 +9,12 @@ public class PhysicsSystem
 
     // We don't actually need total time, just doing it to match the lab document xD
     public float time = 0.0f;
+
+    // TODO -- add multiply bodies within Game's start function
+    public List<PhysicsBody> bodies = new List<PhysicsBody>();
+
+    // Example of the behaviour I want *multiple* of:
+    public PhysicsBody testBody;
 
     public void Step(float dt)
     {

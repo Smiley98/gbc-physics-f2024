@@ -6,7 +6,11 @@ public class Game : MonoBehaviour
 
     void Start()
     {
-        
+        // **Add MULTIPLE physics bodies to physicsSystem's bodies list**
+        physicsSystem.testBody = new PhysicsBody();
+
+        // Test body's initial settings
+        physicsSystem.testBody.pos = new Vector3(0.0f, 1.0f, 0.0f);
     }
 
     void FixedUpdate()
@@ -14,6 +18,11 @@ public class Game : MonoBehaviour
         float dt = Time.fixedDeltaTime;
         physicsSystem.time += dt;
         physicsSystem.Step(dt);
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawSphere(physicsSystem.testBody.pos, 1.0f);
     }
 
     // This is over-engineered. Consider rolling your own "fixed-update for homework"
