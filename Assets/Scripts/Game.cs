@@ -11,7 +11,9 @@ public class Game : MonoBehaviour
 
     void FixedUpdate()
     {
-        physicsSystem.Step(Time.fixedDeltaTime);
+        float dt = Time.fixedDeltaTime;
+        physicsSystem.time += dt;
+        physicsSystem.Step(dt);
     }
 
     // This is over-engineered. Consider rolling your own "fixed-update for homework"
