@@ -4,19 +4,9 @@ using UnityEngine;
 
 public class Launch : MonoBehaviour
 {
-    public float launchAngle;
-    public float launchSpeed;
-
-    // Launch velocity = launch direction * launch magnitude
-    Vector3 launchVelocity = Vector3.zero;
-
-    Vector3 launchDirection = Vector3.up;
-    float launchMagnitude = 10.0f;
-
     Vector3 acc = Vector3.zero;
     Vector3 vel = Vector3.zero;
     Vector3 pos = Vector3.zero;
-
     bool launched = false;
 
     // Poll input in update to prevent missed inputs, apply single-use changes on-input.
@@ -41,7 +31,9 @@ public class Launch : MonoBehaviour
 
         // Render motion
         transform.position = pos;
-        Debug.DrawLine(transform.position, transform.position + launchDirection * launchMagnitude, Color.magenta);
+
+        // Disregarding this part of the lab
+        //Debug.DrawLine(transform.position, transform.position + launchDirection * launchMagnitude, Color.magenta);
     }
 
     void ResetProjectile()
@@ -55,8 +47,17 @@ public class Launch : MonoBehaviour
 
     void LaunchProjectile()
     {
+        // Extra practice: change the velocity to move the projectile
+        // *forward* instead of *right* (yz instead of xy)
+        // **(Note to self -- show curve rendering and motion solving in lecture)**
+        float launchSpeed = 10.0f;
+        float launchAngle = 60.0f;
+        Vector3 launchDirection = new Vector2(
+            Mathf.Cos(launchAngle * Mathf.Deg2Rad),
+            Mathf.Sin(launchAngle * Mathf.Deg2Rad));
+
         Debug.Log("Launching Projectile!!!");
-        launchVelocity = launchDirection * launchMagnitude;
+        Vector3 launchVelocity = launchDirection * launchSpeed;
         acc = Physics.gravity;
         vel = launchVelocity;
         launched = true;
