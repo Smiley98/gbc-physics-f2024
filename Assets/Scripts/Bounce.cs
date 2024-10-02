@@ -13,9 +13,10 @@ public class Bounce : MonoBehaviour
 
     void FixedUpdate()
     {
+        // "Integration" is updating a value based on the previous value + its change
         float dt = Time.fixedDeltaTime;
-        vel = vel + acc * dt; // Update velocity based on acceleration
-        pos = pos + vel * dt; // Update position based on velocity
+        vel = vel + acc * dt; // Integrate velocity based on acceleration
+        pos = pos + vel * dt; // Integrate position based on velocity
 
         // Apply motion to Unity GameObject via Transform component
         transform.position = new Vector3(0.0f, pos, 0.0f);
