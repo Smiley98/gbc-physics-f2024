@@ -34,10 +34,11 @@ public class Game : MonoBehaviour
     void OnDrawGizmos()
     {
         // TODO -- consider making this into a "Render()" method of PhysicsSystem
+        // LE5 TODO 3: Change the colour of each sphere to refect its collision status
         for (int i = 0; i < physicsSystem.bodies.Count; i++)
         {
             PhysicsBody body = physicsSystem.bodies[i];
-            Gizmos.DrawSphere(body.pos, 1.0f);
+            Gizmos.DrawSphere(body.pos, body.radius);
         }
     }
 }

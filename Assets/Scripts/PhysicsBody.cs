@@ -10,4 +10,7 @@ public class PhysicsBody
     // Drag that's near-one makes velocity larger (ie 2 * 0.95 = 1.9)
     // Drag must be between 0 and 1. Drag of 1 means no air resistance!
     public float drag = 1.0f;
+
+    // LE5 TODO -- consider adding a collision flag to allow the rendering system to determine colour
+    public float radius = 1.0f;
 }
