@@ -20,8 +20,8 @@ public class Bounce : MonoBehaviour
         // Apply motion to Unity GameObject via Transform component
         transform.position = new Vector3(0.0f, pos, 0.0f);
 
-        // Homework:
-        // if ball is below the ground:
-        //      -negate ball velocity, causing it to bounce!
+        // "Bounce" the ball by negating its velocity if its below the ground (0.0)!
+        if (pos < 0.0f)
+            vel = -vel;
     }
 }
