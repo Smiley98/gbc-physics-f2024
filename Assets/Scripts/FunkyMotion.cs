@@ -19,7 +19,9 @@ public class FunkyMotion : MonoBehaviour
         float dt = Time.fixedDeltaTime;
 
         // Example of frequency (faster/slower time) & amplitude (min/max)
-        float z = Mathf.Sin(time * 10.0f) * 5.0f;
+        y = y + (Mathf.Cos(time * frequency)) * frequency * amplitude * dt;
+        x = x + (Mathf.Sin(time * frequency)) * frequency * amplitude * dt;
+        float z = 0.0f;//Mathf.Sin(time * 10.0f) * 5.0f;
 
         // Homework 1: modify x and y to use sin & cos as indicated in the document!
         transform.position = new Vector3(x, y, z);
