@@ -4,45 +4,61 @@ using UnityEngine;
 
 public class Launch : MonoBehaviour
 {
-    public GameObject projectile;
     public float launchAngle;
     public float launchSpeed;
 
+    // Launch velocity = launch direction * launch magnitude
     Vector3 launchVelocity = Vector3.zero;
 
-    // You can determine magnitude & direction using vector math on launch-velocity
-    // These are just for reference because I want you to render the launch velocity
     Vector3 launchDirection = Vector3.up;
     float launchMagnitude = 10.0f;
 
-    Vector3 acc = Physics.gravity;
+    Vector3 acc = Vector3.zero;
     Vector3 vel = Vector3.zero;
     Vector3 pos = Vector3.zero;
 
-    void Start()
-    {
-        // 1. Compute launch direction by decomposing launch-angle into horizontal & vertical components
-        // 2. Compute launch velocity by multiplying launch-direction by launch-speed
-    }
+    bool launched = false;
 
+    // Poll input in update to prevent missed inputs, apply single-use changes on-input.
     void Update()
     {
-        // 3. Complete the Relaunch function
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Relaunch();
-            Debug.Log("Space Pressed!");
-        }
+        // Reset
+        if (Input.GetKeyDown(KeyCode.R))
+            ResetProjectile();
 
-        // 4. Apply motion based on position, velocity, and acceleration.
+        // Launch
+        if (Input.GetKeyDown(KeyCode.L))
+            LaunchProjectile();
+    }
 
-        // Replace this with actual launch velocity
+    // ***DO NOT PUT INPUT P0LLING IN HERE AS IT ONLY RUNS AT 50HZ BY DEFAULT***
+    void FixedUpdate()
+    {
+        // Update motion
+        float dt = Time.fixedDeltaTime;
+        vel = vel + acc * dt;
+        pos = pos + vel * dt;
+
+        // Render motion
+        transform.position = pos;
         Debug.DrawLine(transform.position, transform.position + launchDirection * launchMagnitude, Color.magenta);
     }
 
-    void Relaunch()
+    void ResetProjectile()
     {
-        // 1. Reset position to initial position (ie zero)
-        // 2. Reset velocity to initial velocity (launch velocity)
+        Debug.Log("Reseting Projectile...");
+        acc = Vector3.zero;
+        vel = Vector3.zero;
+        pos = Vector3.zero;
+        launched = false;
+    }
+
+    void LaunchProjectile()
+    {
+        Debug.Log("Launching Projectile!!!");
+        launchVelocity = launchDirection * launchMagnitude;
+        acc = Physics.gravity;
+        vel = launchVelocity;
+        launched = true;
     }
 }
