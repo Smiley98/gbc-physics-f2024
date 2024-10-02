@@ -6,45 +6,38 @@ public class Game : MonoBehaviour
 
     void Start()
     {
-        // TODO -- **Add MULTIPLE physics bodies to physicsSystem's bodies list**
-        physicsSystem.testBody = new PhysicsBody();
+        // Initialize bodies and them to physics system
+        PhysicsBody body1 = new PhysicsBody();
+        body1.pos = new Vector3(0.0f, 0.0f, 0.0f);
+        body1.vel = new Vector3(0.0f, 10.0f, 0.0f);
+        body1.drag = 0.05f; // *Must be between 0.0 and 1.0*
+        physicsSystem.bodies.Add(body1);
 
-        // Test body's initial settings
-        physicsSystem.testBody.pos = new Vector3(0.0f, 1.0f, -1.0f);
-        physicsSystem.testBody.vel = new Vector3(0.0f, 10.0f, 0.0f);
-        physicsSystem.testBody.drag = 0.05f; // *Must be between 0.0 and 1.0*
+        PhysicsBody body2 = new PhysicsBody();
+        body2.pos = new Vector3(-2.0f, 0.0f, 0.0f);
+        body2.vel = new Vector3(0.0f, 20.0f, 0.0f);
+        body2.drag = 0.1f;
+        physicsSystem.bodies.Add(body2);
+
+        PhysicsBody body3 = new PhysicsBody();
+        body3.pos = new Vector3(2.0f, 0.0f, 0.0f);
+        body3.vel = new Vector3(0.0f, 30.0f, 0.0f);
+        body3.drag = 0.2f;
+        physicsSystem.bodies.Add(body3);
     }
 
     void FixedUpdate()
     {
-        // TODO -- Port your projectile (LE3) code to launch a projectile
-        // using the physics system when space is pressed!
-        float dt = Time.fixedDeltaTime;
-        physicsSystem.time += dt;
-        physicsSystem.Step(dt);
+        physicsSystem.Step(Time.fixedDeltaTime);
     }
 
     void OnDrawGizmos()
     {
-        // (Once we switch to physicsSystem.bodies, the null error will go away
-        // since it gets populated at runtime)
-        Gizmos.DrawSphere(physicsSystem.testBody.pos, 1.0f);
-
-        // TODO -- render all physics bodies
+        // TODO -- consider making this into a "Render()" method of PhysicsSystem
+        for (int i = 0; i < physicsSystem.bodies.Count; i++)
+        {
+            PhysicsBody body = physicsSystem.bodies[i];
+            Gizmos.DrawSphere(body.pos, 1.0f);
+        }
     }
-
-    // This is over-engineered. Consider rolling your own "fixed-update for homework"
-    //void Update()
-    //{
-    //    // The following loop ensures we only *ever* update (step) our physics system
-    //    // at the desired frequency (100hz). 
-    //    float dt = Time.deltaTime;
-    //    physicsSystem.frameTime += dt;
-    //    if (physicsSystem.frameTime >= physicsSystem.stepFrequency)
-    //    {
-    //        physicsSystem.Step(physicsSystem.stepFrequency);
-    //        float extraTime = physicsSystem.frameTime - physicsSystem.stepFrequency;
-    //        physicsSystem.frameTime = extraTime;
-    //    }
-    //}
 }
