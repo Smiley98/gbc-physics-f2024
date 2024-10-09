@@ -1,5 +1,11 @@
 using UnityEngine;
 
+public enum ShapeType
+{
+    SPHERE,
+    PLANE
+}
+
 // *Unity Physics are not allowed. We must make EVERYTHING from scratch in this course!*
 public class PhysicsBody
 {
@@ -13,4 +19,10 @@ public class PhysicsBody
 
     // LE5 TODO -- consider adding a collision flag to allow the rendering system to determine colour
     public float radius = 1.0f;
+
+    // How collision detection is done (sphere or plane)
+    public ShapeType shapeType = ShapeType.SPHERE;
+
+    // Whether the body collided with another last physics update
+    public bool collision = false;
 }

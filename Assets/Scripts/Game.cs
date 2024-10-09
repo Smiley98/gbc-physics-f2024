@@ -38,6 +38,7 @@ public class Game : MonoBehaviour
         for (int i = 0; i < physicsSystem.bodies.Count; i++)
         {
             PhysicsBody body = physicsSystem.bodies[i];
+            Gizmos.color = body.collision ? Color.red : Color.green;
             Gizmos.DrawSphere(body.pos, body.radius);
         }
     }

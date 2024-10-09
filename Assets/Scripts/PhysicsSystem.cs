@@ -22,9 +22,45 @@ public class PhysicsSystem
             Integrate(ref body.vel, acc, dt);
             Integrate(ref body.pos, body.vel, dt);
         }
+        
+        // Reset collision flag before hit-testing
+        for (int i = 0; i < bodies.Count; i++)
+        {
+            bodies[i].collision = false;
+        }
 
-        // LE5 TODO 1:
-        // Write a 2d for-loop that tests all objects against all objects for sphere collision
+        // Write a 2d for-loop that tests all objects against all objects
+        for (int i = 0; i < bodies.Count; i++)
+        {
+            for (int j = i + 1; j < bodies.Count; j++)
+            {
+                // Check collision here
+                PhysicsBody a = bodies[i];
+                PhysicsBody b = bodies[j];
+
+                bool collision = false;
+                if (a.shapeType == ShapeType.SPHERE && b.shapeType == ShapeType.SPHERE)
+                {
+                    collision = SphereSphere(a.pos, a.radius, b.pos, b.radius);
+                }
+                else if (a.shapeType == ShapeType.SPHERE && b.shapeType == ShapeType.PLANE)
+                {
+
+                }
+                else if (a.shapeType == ShapeType.PLANE && b.shapeType == ShapeType.SPHERE)
+                {
+
+                }
+                else
+                {
+                    Debug.LogError("Invalid collision test");
+                }
+
+                // Update collision flag
+                a.collision |= collision;
+                b.collision |= collision;
+            }
+        }
     }
 
     // "Integration" is updating a value based on the previous value + its change
@@ -34,8 +70,8 @@ public class PhysicsSystem
     }
 
     // LE5 TODO 2: Complete this function to determine if two circles are overlapping
-    private bool CircleCircle(Vector3 center1, float radius1, Vector3 center2, float radius2)
+    private bool SphereSphere(Vector3 center1, float radius1, Vector3 center2, float radius2)
     {
-        return false;
+        return center1.y >= 0.0f;
     }
 }
