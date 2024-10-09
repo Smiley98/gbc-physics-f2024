@@ -17,12 +17,18 @@ public class PhysicsBody
     // Drag must be between 0 and 1. Drag of 1 means no air resistance!
     public float drag = 1.0f;
 
-    // LE5 TODO -- consider adding a collision flag to allow the rendering system to determine colour
-    public float radius = 1.0f;
-
     // How collision detection is done (sphere or plane)
     public ShapeType shapeType = ShapeType.SPHERE;
 
+    // If type is SPHERE, use radius
+    public float radius = 1.0f;
+
+    // If type is PLANE, use normal
+    public Vector3 normal = Vector3.up;
+
     // Whether the body collided with another last physics update
     public bool collision = false;
+
+    // Whether objects can move
+    public bool dynamic = false;
 }

@@ -9,11 +9,12 @@ public class PhysicsSystem
 
     public void Step(float dt)
     {
-        Vector3 acc = gravity;
         for (int i = 0; i < bodies.Count; i++)
         {
             // Current physics object ("body")
             PhysicsBody body = bodies[i];
+
+            Vector3 acc = body.dynamic ? gravity : Vector3.zero;
 
             // Apply drag to velocity
             body.vel *= Mathf.Pow(body.drag, dt);
@@ -45,11 +46,11 @@ public class PhysicsSystem
                 }
                 else if (a.shapeType == ShapeType.SPHERE && b.shapeType == ShapeType.PLANE)
                 {
-
+                    collision = SpherePlane(a.pos, a.radius, b.pos, b.normal);
                 }
                 else if (a.shapeType == ShapeType.PLANE && b.shapeType == ShapeType.SPHERE)
                 {
-
+                    collision = SpherePlane(b.pos, b.radius, a.pos, a.normal);
                 }
                 else
                 {
@@ -69,9 +70,17 @@ public class PhysicsSystem
         value = value + change * dt;
     }
 
-    // LE5 TODO 2: Complete this function to determine if two circles are overlapping
-    private bool SphereSphere(Vector3 center1, float radius1, Vector3 center2, float radius2)
+    private bool SphereSphere(Vector3 position1, float radius1, Vector3 position2, float radius2)
     {
-        return center1.y >= 0.0f;
+        return position1.y >= 0.0f;
+    }
+
+    // LE6 TODO 2: Complete this function to determine if a sphere and plane are overlapping
+    private bool SpherePlane(Vector3 spherePosition, float radius, Vector3 planePosition, Vector3 normal)
+    {
+        // 1. Compute the circle's position relative to the plane by subtracting the plane's position FROM the circle's position.
+        // 2. Project the circle's relative position along the plane's normal by taking the dot-product of the relative position and the normal ie Vector3.Dot(a, b)
+        // 3. Check if the dot-product (magnitude of the projection) is less than the radius of the sphere (collision if so)!
+        return false;
     }
 }
