@@ -148,7 +148,6 @@ public class PhysicsSystem
         bool collision = SpherePlane(spherePosition, radius, planePosition, normal);
         if (collision)
         {
-            // Calculate mtv
             mtv = Vector3.zero; // (replace this)
         }
         else
