@@ -8,7 +8,7 @@ public class Game : MonoBehaviour
     {
         // Initialize bodies and them to physics system
         PhysicsBody ground = new PhysicsBody();
-        ground.pos = Vector3.zero;
+        ground.pos = new Vector3(0.0f, -4.0f, 0.0f);
         ground.vel = Vector3.zero;
         ground.dynamic = false;
         ground.shapeType = ShapeType.PLANE;

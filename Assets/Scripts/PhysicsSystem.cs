@@ -72,17 +72,16 @@ public class PhysicsSystem
 
     private bool SphereSphere(Vector3 position1, float radius1, Vector3 position2, float radius2)
     {
+        // Collision if distance between centres is less than radii sum
         float distance = Vector3.Distance(position1, position2);
         float radiiSum = radius1 + radius2;
         return distance <= radiiSum;
     }
 
-    // LE6 TODO 2: Complete this function to determine if a sphere and plane are overlapping
     private bool SpherePlane(Vector3 spherePosition, float radius, Vector3 planePosition, Vector3 normal)
     {
-        // 1. Compute the circle's position relative to the plane by subtracting the plane's position FROM the circle's position.
-        // 2. Project the circle's relative position along the plane's normal by taking the dot-product of the relative position and the normal ie Vector3.Dot(a, b)
-        // 3. Check if the dot-product (magnitude of the projection) is less than the radius of the sphere (collision if so)!
-        return false;
+        // Collision if distance of circle projected onto plane normal is less than radius
+        float distance = Vector3.Dot(spherePosition - planePosition, normal);
+        return distance <= radius;
     }
 }
