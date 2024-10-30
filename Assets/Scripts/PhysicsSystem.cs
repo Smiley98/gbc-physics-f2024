@@ -39,18 +39,28 @@ public class PhysicsSystem
                 PhysicsBody a = bodies[i];
                 PhysicsBody b = bodies[j];
 
+                // Future TODO for Connor: make A always dynamic and B static or dynamic, do so by making a Manifold object
+                // For now, assuming all spheres are dynamic, and all planes are static for simplicity.
+                Vector3 mtv = Vector3.zero;
                 bool collision = false;
                 if (a.shapeType == ShapeType.SPHERE && b.shapeType == ShapeType.SPHERE)
                 {
-                    collision = SphereSphere(a.pos, a.radius, b.pos, b.radius);
+                    // Translate each sphere 50% along MTV
+                    collision = SphereSphere(a.pos, a.radius, b.pos, b.radius, out mtv);
+                    a.pos += mtv * 0.5f;
+                    b.pos -= mtv * 0.5f;
                 }
                 else if (a.shapeType == ShapeType.SPHERE && b.shapeType == ShapeType.PLANE)
                 {
-                    collision = SpherePlane(a.pos, a.radius, b.pos, b.normal);
+                    // Resolve sphere from plane
+                    collision = SpherePlane(a.pos, a.radius, b.pos, b.normal, out mtv);
+                    a.pos += mtv;
                 }
                 else if (a.shapeType == ShapeType.PLANE && b.shapeType == ShapeType.SPHERE)
                 {
-                    collision = SpherePlane(b.pos, b.radius, a.pos, a.normal);
+                    // Resolve sphere from plane
+                    collision = SpherePlane(b.pos, b.radius, a.pos, a.normal, out mtv);
+                    b.pos += mtv;
                 }
                 else
                 {
@@ -83,5 +93,37 @@ public class PhysicsSystem
         // Collision if distance of circle projected onto plane normal is less than radius
         float distance = Vector3.Dot(spherePosition - planePosition, normal);
         return distance <= radius;
+    }
+
+    // Ensure MTV resolves A from B (1 from 2)
+    private bool SphereSphere(Vector3 position1, float radius1, Vector3 position2, float radius2, out Vector3 mtv)
+    {
+        bool collision = SphereSphere(position1, radius1, position2, radius2);
+        if (collision)
+        {
+            // Calculate mtv
+            mtv = Vector3.one; // (replace this)
+        }
+        else
+        {
+            mtv = Vector3.zero;
+        }
+        return collision;
+    }
+
+    // Ensure MTV points FROM plane TO sphere
+    private bool SpherePlane(Vector3 spherePosition, float radius, Vector3 planePosition, Vector3 normal, out Vector3 mtv)
+    {
+        bool collision = SpherePlane(spherePosition, radius, planePosition, normal);
+        if (collision)
+        {
+            // Calculate mtv
+            mtv = Vector3.one; // (replace this)
+        }
+        else
+        {
+            mtv = Vector3.zero;
+        }
+        return collision;
     }
 }
