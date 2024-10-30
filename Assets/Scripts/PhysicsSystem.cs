@@ -72,7 +72,9 @@ public class PhysicsSystem
 
     private bool SphereSphere(Vector3 position1, float radius1, Vector3 position2, float radius2)
     {
-        return position1.y >= 0.0f;
+        float distance = Vector3.Distance(position1, position2);
+        float radiiSum = radius1 + radius2;
+        return distance <= radiiSum;
     }
 
     // LE6 TODO 2: Complete this function to determine if a sphere and plane are overlapping

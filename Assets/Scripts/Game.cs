@@ -39,8 +39,26 @@ public class Game : MonoBehaviour
         body3.drag = 0.2f;
         body3.dynamic = true;
         body3.shapeType = ShapeType.SPHERE;
-        body2.radius = 1.0f;
+        body3.radius = 1.0f;
         physicsSystem.bodies.Add(body3);
+
+        PhysicsBody body4 = new PhysicsBody();
+        body4.pos = new Vector3(0.0f, 0.0f, 0.0f);
+        body4.vel = new Vector3(0.0f, 0.0f, 0.0f);
+        body4.drag = 0.2f;
+        body4.dynamic = false;
+        body4.shapeType = ShapeType.SPHERE;
+        body4.radius = 1.0f;
+        physicsSystem.bodies.Add(body4);
+
+        PhysicsBody body5 = new PhysicsBody();
+        body5.pos = new Vector3(0.5f, 0.0f, 0.0f);
+        body5.vel = new Vector3(0.0f, 0.0f, 0.0f);
+        body5.drag = 0.2f;
+        body5.dynamic = false;
+        body5.shapeType = ShapeType.SPHERE;
+        body5.radius = 1.0f;
+        physicsSystem.bodies.Add(body5);
     }
 
     void FixedUpdate()
