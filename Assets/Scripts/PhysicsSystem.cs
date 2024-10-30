@@ -5,11 +5,39 @@ using System.Collections.Generic;
 public class PhysicsSystem
 {
     public Vector3 gravity = Physics.gravity;
-    public List<PhysicsBody> bodies = new List<PhysicsBody>();
+
+    // Apply changes from GameObject to PhysicsBody
+    public void PreStep()
+    {
+        PhysicsBody[] bodies = GameObject.FindObjectsByType<PhysicsBody>(FindObjectsSortMode.None);
+        for (int i = 0; i < bodies.Length; i++)
+        {
+            if (bodies[i].shapeType == ShapeType.PLANE)
+            {
+                bodies[i].normal = bodies[i].transform.up;
+            }
+
+            bodies[i].pos = bodies[i].transform.position;
+            bodies[i].gameObject.GetComponent<Renderer>().material.color = Color.green;
+        }
+    }
+
+    // Apply changes from PhysicsBody to GameObject
+    public void PostStep()
+    {
+        PhysicsBody[] bodies = GameObject.FindObjectsByType<PhysicsBody>(FindObjectsSortMode.None);
+        for (int i = 0; i < bodies.Length; i++)
+        {
+            Color color = bodies[i].collision ? Color.red : Color.green;
+            bodies[i].gameObject.GetComponent<Renderer>().material.color = color;
+            bodies[i].transform.position = bodies[i].pos;
+        }
+    }
 
     public void Step(float dt)
     {
-        for (int i = 0; i < bodies.Count; i++)
+        PhysicsBody[] bodies = GameObject.FindObjectsByType<PhysicsBody>(FindObjectsSortMode.None);
+        for (int i = 0; i < bodies.Length; i++)
         {
             // Current physics object ("body")
             PhysicsBody body = bodies[i];
@@ -22,18 +50,21 @@ public class PhysicsSystem
             // Apply motion
             Integrate(ref body.vel, acc, dt);
             Integrate(ref body.pos, body.vel, dt);
+
+            // Apply position calculated in our physics update back to Unity
+            body.transform.position = body.pos;
         }
         
         // Reset collision flag before hit-testing
-        for (int i = 0; i < bodies.Count; i++)
+        for (int i = 0; i < bodies.Length; i++)
         {
             bodies[i].collision = false;
         }
 
         // Write a 2d for-loop that tests all objects against all objects
-        for (int i = 0; i < bodies.Count; i++)
+        for (int i = 0; i < bodies.Length; i++)
         {
-            for (int j = i + 1; j < bodies.Count; j++)
+            for (int j = i + 1; j < bodies.Length; j++)
             {
                 // Check collision here
                 PhysicsBody a = bodies[i];
@@ -102,7 +133,7 @@ public class PhysicsSystem
         if (collision)
         {
             // Calculate mtv
-            mtv = Vector3.one; // (replace this)
+            mtv = Vector3.zero; // (replace this)
         }
         else
         {
@@ -118,7 +149,7 @@ public class PhysicsSystem
         if (collision)
         {
             // Calculate mtv
-            mtv = Vector3.one; // (replace this)
+            mtv = Vector3.zero; // (replace this)
         }
         else
         {
