@@ -2,47 +2,36 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-// Stores information about a collision
-//public class Manifold
-//{
-//
-//}
+public class HitPair
+{
+    public int a = -1;
+    public int b = -1;
+    public Vector3 mtv = Vector3.zero;
+}
 
 public class PhysicsSystem
 {
     public Vector3 gravity = Physics.gravity;
+    private float dt = 0.0f;
 
-    // Apply changes from GameObject to PhysicsBody
-    public void PreStep()
+    private PhysicsBody[] bodies = null;
+
+    public void Step(float timestep)
     {
-        PhysicsBody[] bodies = GameObject.FindObjectsByType<PhysicsBody>(FindObjectsSortMode.None);
-        for (int i = 0; i < bodies.Length; i++)
-        {
-            if (bodies[i].shapeType == ShapeType.PLANE)
-            {
-                bodies[i].normal = bodies[i].transform.up;
-            }
+        dt = timestep;
 
-            bodies[i].pos = bodies[i].transform.position;
-            bodies[i].gameObject.GetComponent<Renderer>().material.color = Color.green;
-        }
+        // 1. Apply motion
+        UpdateMotion();
+
+        // 2. Detect collisions
+        List<HitPair> collisions = DetectCollisions();
+
+        // 3. Resolve collisions
+        ResolveCollisions(collisions);
     }
 
-    // Apply changes from PhysicsBody to GameObject
-    public void PostStep()
+    private void UpdateMotion()
     {
-        PhysicsBody[] bodies = GameObject.FindObjectsByType<PhysicsBody>(FindObjectsSortMode.None);
-        for (int i = 0; i < bodies.Length; i++)
-        {
-            Color color = bodies[i].collision ? Color.red : Color.green;
-            bodies[i].gameObject.GetComponent<Renderer>().material.color = color;
-            bodies[i].transform.position = bodies[i].pos;
-        }
-    }
-
-    public void Step(float dt)
-    {
-        PhysicsBody[] bodies = GameObject.FindObjectsByType<PhysicsBody>(FindObjectsSortMode.None);
         for (int i = 0; i < bodies.Length; i++)
         {
             // Current physics object ("body")
@@ -64,79 +53,124 @@ public class PhysicsSystem
                 body.transform.position = body.pos;
             }
         }
-        
+    }
+
+    private List<HitPair> DetectCollisions()
+    {
         // Reset collision flag before hit-testing
         for (int i = 0; i < bodies.Length; i++)
         {
             bodies[i].collision = false;
         }
 
-        // Write a 2d for-loop that tests all objects against all objects
+        List<HitPair> collisions = new List<HitPair>();
+        // Test all bodies for collision, store pairs of colliding objects
         for (int i = 0; i < bodies.Length; i++)
         {
             for (int j = i + 1; j < bodies.Length; j++)
             {
-                // Check collision here
                 PhysicsBody a = bodies[i];
                 PhysicsBody b = bodies[j];
 
-                // Future TODO for Connor: make A always dynamic and B static or dynamic, do so by making a Manifold object
-                // For now, assuming all spheres are dynamic, and all planes are static for simplicity.
                 Vector3 mtv = Vector3.zero;
                 bool collision = false;
                 if (a.shapeType == ShapeType.SPHERE && b.shapeType == ShapeType.SPHERE)
                 {
-                    // Translate each sphere 50% along MTV
                     collision = SphereSphere(a.pos, a.radius, b.pos, b.radius, out mtv);
                 }
                 else if (a.shapeType == ShapeType.SPHERE && b.shapeType == ShapeType.PLANE)
                 {
-                    // Resolve sphere from plane
                     collision = SpherePlane(a.pos, a.radius, b.pos, b.normal, out mtv);
-                    //a.pos += mtv;
                 }
                 else if (a.shapeType == ShapeType.PLANE && b.shapeType == ShapeType.SPHERE)
                 {
-                    // Resolve sphere from plane
                     collision = SpherePlane(b.pos, b.radius, a.pos, a.normal, out mtv);
-                    //b.pos += mtv;
                 }
                 else
                 {
                     Debug.LogError("Invalid collision test");
                 }
-
-                // Update collision flag
                 a.collision |= collision;
                 b.collision |= collision;
 
-                // Flip mtv and swap A with B if mtv DOES NOT point from B to A
-                //if (collision && Vector3.Dot(mtv, Vector3.Normalize(a.pos - b.pos)) < 0.0f)
-                //{
-                //    // If this is true, B is dynamic and A is static
-                //
-                //}
+                HitPair hitPair = new HitPair();
+                hitPair.a = i; hitPair.b = j;
+                hitPair.mtv = mtv;
+                collisions.Add(hitPair);
+            }
+        }
+        return collisions;
+    }
 
-                // Resolve motion
-                if (collision)
+    private void ResolveCollisions(List<HitPair> collisions)
+    {
+        // Pre-pass to ensure A is *always* dynamic and MTV points from B to A
+        foreach (HitPair collision in collisions)
+        {
+            if (!bodies[collision.a].Dynamic())
+            {
+                int temp = collision.a;
+                collision.a = collision.b;
+                collision.b = temp;
+
+                if (Vector3.Dot(collision.mtv, Vector3.Normalize(bodies[collision.a].pos - bodies[collision.b].pos)) < 0.0f)
                 {
-                    if (!a.Dynamic())
-                    {
-                        // MTV points from B to A, but we want to resolve B from A since A is static
-                        mtv *= -1.0f;
-                        b.pos += mtv;
-                    }
-                    else if (a.Dynamic() && b.Dynamic())
-                    {
-                        a.pos += mtv * 0.5f;
-                        b.pos -= mtv * 0.5f;
-                    }
-                    else
-                    {
-                        a.pos += mtv;
-                    }    
+                    collision.mtv *= -1.0f;
                 }
             }
+        }
+
+        // Resolve via mtv
+        foreach (HitPair collision in collisions)
+        {
+            PhysicsBody a = bodies[collision.a];
+            PhysicsBody b = bodies[collision.b];
+
+            if (!b.Dynamic())
+            {
+                a.pos += collision.mtv;
+            }
+            else
+            {
+                a.pos += collision.mtv * 0.5f;
+                b.pos -= collision.mtv * 0.5f;
+            }
+        }
+    }
+
+    public void Init()
+    {
+        bodies = GameObject.FindObjectsByType<PhysicsBody>(FindObjectsSortMode.None);
+    }
+
+    public void Quit()
+    {
+        bodies = null;
+    }
+
+    // Apply changes from GameObject to PhysicsBody
+    public void PreStep()
+    {
+        for (int i = 0; i < bodies.Length; i++)
+        {
+            if (bodies[i].shapeType == ShapeType.PLANE)
+            {
+                bodies[i].normal = bodies[i].transform.up;
+            }
+
+            bodies[i].pos = bodies[i].transform.position;
+            bodies[i].gameObject.GetComponent<Renderer>().material.color = Color.green;
+        }
+    }
+
+    // Apply changes from PhysicsBody to GameObject
+    public void PostStep()
+    {
+        for (int i = 0; i < bodies.Length; i++)
+        {
+            Color color = bodies[i].collision ? Color.red : Color.green;
+            bodies[i].gameObject.GetComponent<Renderer>().material.color = color;
+            bodies[i].transform.position = bodies[i].pos;
         }
     }
 
