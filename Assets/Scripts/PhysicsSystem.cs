@@ -2,6 +2,12 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+// Stores information about a collision
+//public class Manifold
+//{
+//
+//}
+
 public class PhysicsSystem
 {
     public Vector3 gravity = Physics.gravity;
@@ -42,17 +48,21 @@ public class PhysicsSystem
             // Current physics object ("body")
             PhysicsBody body = bodies[i];
 
-            Vector3 acc = body.dynamic ? gravity : Vector3.zero;
+            // Only apply motion if the object is moveable
+            if (body.Dynamic())
+            {
+                Vector3 acc = gravity;
 
-            // Apply drag to velocity
-            body.vel *= Mathf.Pow(body.drag, dt);
+                // Apply drag to velocity
+                body.vel *= Mathf.Pow(body.drag, dt);
 
-            // Apply motion
-            Integrate(ref body.vel, acc, dt);
-            Integrate(ref body.pos, body.vel, dt);
+                // Apply motion
+                Integrate(ref body.vel, acc, dt);
+                Integrate(ref body.pos, body.vel, dt);
 
-            // Apply position calculated in our physics update back to Unity
-            body.transform.position = body.pos;
+                // Apply position calculated in our physics update back to Unity
+                body.transform.position = body.pos;
+            }
         }
         
         // Reset collision flag before hit-testing
@@ -78,20 +88,18 @@ public class PhysicsSystem
                 {
                     // Translate each sphere 50% along MTV
                     collision = SphereSphere(a.pos, a.radius, b.pos, b.radius, out mtv);
-                    a.pos += mtv * 0.5f;
-                    b.pos -= mtv * 0.5f;
                 }
                 else if (a.shapeType == ShapeType.SPHERE && b.shapeType == ShapeType.PLANE)
                 {
                     // Resolve sphere from plane
                     collision = SpherePlane(a.pos, a.radius, b.pos, b.normal, out mtv);
-                    a.pos += mtv;
+                    //a.pos += mtv;
                 }
                 else if (a.shapeType == ShapeType.PLANE && b.shapeType == ShapeType.SPHERE)
                 {
                     // Resolve sphere from plane
                     collision = SpherePlane(b.pos, b.radius, a.pos, a.normal, out mtv);
-                    b.pos += mtv;
+                    //b.pos += mtv;
                 }
                 else
                 {
@@ -101,6 +109,33 @@ public class PhysicsSystem
                 // Update collision flag
                 a.collision |= collision;
                 b.collision |= collision;
+
+                // Flip mtv and swap A with B if mtv DOES NOT point from B to A
+                //if (collision && Vector3.Dot(mtv, Vector3.Normalize(a.pos - b.pos)) < 0.0f)
+                //{
+                //    // If this is true, B is dynamic and A is static
+                //
+                //}
+
+                // Resolve motion
+                if (collision)
+                {
+                    if (!a.Dynamic())
+                    {
+                        // MTV points from B to A, but we want to resolve B from A since A is static
+                        mtv *= -1.0f;
+                        b.pos += mtv;
+                    }
+                    else if (a.Dynamic() && b.Dynamic())
+                    {
+                        a.pos += mtv * 0.5f;
+                        b.pos -= mtv * 0.5f;
+                    }
+                    else
+                    {
+                        a.pos += mtv;
+                    }    
+                }
             }
         }
     }

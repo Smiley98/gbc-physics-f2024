@@ -102,8 +102,8 @@ MonoBehaviour:
   pos: {x: 0, y: 0, z: 0}
   vel: {x: 0, y: 0, z: 0}
   drag: 1
+  invMass: 0
   shapeType: 1
   radius: 1
   normal: {x: 0, y: 1, z: 0}
   collision: 0
-  dynamic: 0

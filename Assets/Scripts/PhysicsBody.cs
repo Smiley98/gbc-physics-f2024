@@ -17,6 +17,9 @@ public class PhysicsBody : MonoBehaviour
     // Drag must be between 0 and 1. Drag of 1 means no air resistance!
     public float drag = 1.0f;
 
+    // 1.0 means mass of 1, 0 means mass of infinity
+    public float invMass = 1.0f;
+
     // How collision detection is done (sphere or plane)
     public ShapeType shapeType = ShapeType.SPHERE;
 
@@ -29,6 +32,8 @@ public class PhysicsBody : MonoBehaviour
     // Whether the body collided with another last physics update
     public bool collision = false;
 
-    // Whether objects can move
-    public bool dynamic = false;
+    public bool Dynamic()
+    {
+        return invMass == 0.0f ? false : true;
+    }
 }
