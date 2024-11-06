@@ -126,14 +126,19 @@ public class PhysicsSystem
         return distance <= radius;
     }
 
-    // Ensure MTV resolves A from B (1 from 2)
+    // Ensure MTV resolves A from B (to 1 from 2)
     private bool SphereSphere(Vector3 position1, float radius1, Vector3 position2, float radius2, out Vector3 mtv)
     {
         bool collision = SphereSphere(position1, radius1, position2, radius2);
         if (collision)
         {
-            // Calculate mtv
-            mtv = Vector3.zero; // (replace this)
+            Vector3 direction = Vector3.Normalize(position1 - position2);
+            float radiiSum = radius1 + radius2;
+            float distance = Vector3.Distance(position1, position2);
+            float depth = radiiSum - distance;
+            mtv = direction * depth;
+            // Expressed in one line (same math as above):
+            //mtv = Vector3.Normalize(position1 - position2) * ((radius1 + radius2) - Vector3.Distance(position1, position2));
         }
         else
         {
@@ -148,7 +153,11 @@ public class PhysicsSystem
         bool collision = SpherePlane(spherePosition, radius, planePosition, normal);
         if (collision)
         {
-            mtv = Vector3.zero; // (replace this)
+            float distance = Vector3.Dot(spherePosition - planePosition, normal);
+            float depth = radius - distance;
+            mtv = normal * depth;
+            // Expressed in one line (same math as above):
+            //mtv = normal * (radius - Vector3.Dot(spherePosition - planePosition, normal));
         }
         else
         {
