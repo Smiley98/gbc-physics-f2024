@@ -120,6 +120,11 @@ public class PhysicsSystem
             }
         }
 
+        // TODO -- calculate friction direction within a loop here
+        // Friction runs *perpendicular* to the collision normal ("MTV")
+        // For each collision, draw a magenta arrow 5 units long from body position in the direction of friction
+        // (Your homework is basically figuring out how to compute a vector perpendicular to the MTV and rendering it)!
+
         // Resolve via mtv
         foreach (HitPair collision in collisions)
         {
