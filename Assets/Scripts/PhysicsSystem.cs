@@ -89,10 +89,13 @@ public class PhysicsSystem
                 a.collision |= collision;
                 b.collision |= collision;
 
-                HitPair hitPair = new HitPair();
-                hitPair.a = i; hitPair.b = j;
-                hitPair.mtv = mtv;
-                collisions.Add(hitPair);
+                if (collision)
+                {
+                    HitPair hitPair = new HitPair();
+                    hitPair.a = i; hitPair.b = j;
+                    hitPair.mtv = mtv;
+                    collisions.Add(hitPair);
+                }
             }
         }
         return collisions;
@@ -115,11 +118,6 @@ public class PhysicsSystem
                 }
             }
         }
-
-        // TODO -- calculate friction direction within a loop here
-        // Friction runs *perpendicular* to the collision normal ("MTV")
-        // For each collision, draw a magenta arrow 5 units long from body position in the direction of friction
-        // (Your homework is basically figuring out how to compute a vector perpendicular to the MTV and rendering it)!
 
         ResolveVelocities(collisions);
         ResolvePositions(collisions);
@@ -152,9 +150,13 @@ public class PhysicsSystem
                 continue;
 
             Vector3 frictionDirection = Vector3.Normalize(velBA - (mtvDir * t));
-            a.frictionDirection = frictionDirection;
+            float frictionMagnitude = -Vector3.Dot(velBA, frictionDirection) / invMassSum;
+            a.friction = frictionDirection * frictionMagnitude;
             if (b.Dynamic())
-                b.frictionDirection = -frictionDirection;
+                b.friction = -a.friction;
+
+            // TODO -- assign homework based on coefficient of friction
+            // (No homework until next week)
         }
     }
 
@@ -212,7 +214,7 @@ public class PhysicsSystem
             Color color = body.collision ? Color.red : Color.green;
             body.GetComponent<Renderer>().material.color = color;
             body.transform.position = bodies[i].pos;
-            Debug.DrawLine(body.pos, body.pos + body.frictionDirection * 5.0f, Color.blue);
+            Debug.DrawLine(body.pos, body.pos + body.friction * 5.0f, Color.blue);
         }
     }
 

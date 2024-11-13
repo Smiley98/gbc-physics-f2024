@@ -10,6 +10,7 @@ public class Game : MonoBehaviour
     {
         // Ground plane
         PhysicsBody ground = Instantiate(planePrefab).GetComponent<PhysicsBody>();
+        ground.transform.up = Vector3.Normalize(Vector3.right * 2.0f + Vector3.up);
 
         // Test sphere
         PhysicsBody sphere1 = Instantiate(spherePrefab).GetComponent<PhysicsBody>();
