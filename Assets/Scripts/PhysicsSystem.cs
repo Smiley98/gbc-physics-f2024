@@ -12,16 +12,12 @@ public class HitPair
 public class PhysicsSystem
 {
     public Vector3 gravity = Physics.gravity;
-    private float dt = 0.0f;
-
     private PhysicsBody[] bodies = null;
 
-    public void Step(float timestep)
+    public void Step(float dt)
     {
-        dt = timestep;
-
         // 1. Apply motion
-        UpdateMotion();
+        UpdateMotion(dt);
 
         // 2. Detect collisions
         List<HitPair> collisions = DetectCollisions();
@@ -30,7 +26,7 @@ public class PhysicsSystem
         ResolveCollisions(collisions);
     }
 
-    private void UpdateMotion()
+    private void UpdateMotion(float dt)
     {
         for (int i = 0; i < bodies.Length; i++)
         {
@@ -113,7 +109,7 @@ public class PhysicsSystem
                 collision.a = collision.b;
                 collision.b = temp;
 
-                if (Vector3.Dot(collision.mtv, Vector3.Normalize(bodies[collision.a].pos - bodies[collision.b].pos)) < 0.0f)
+                if (Vector3.Dot(Vector3.Normalize(collision.mtv), Vector3.Normalize(bodies[collision.a].pos - bodies[collision.b].pos)) < 0.0f)
                 {
                     collision.mtv *= -1.0f;
                 }
@@ -125,7 +121,46 @@ public class PhysicsSystem
         // For each collision, draw a magenta arrow 5 units long from body position in the direction of friction
         // (Your homework is basically figuring out how to compute a vector perpendicular to the MTV and rendering it)!
 
-        // Resolve via mtv
+        ResolveVelocities(collisions);
+        ResolvePositions(collisions);
+    }
+
+    // Change velocity based on friction (& restutition in the future)
+    void ResolveVelocities(List<HitPair> collisions)
+    {
+        foreach (HitPair collision in collisions)
+        {
+            PhysicsBody a = bodies[collision.a];
+            PhysicsBody b = bodies[collision.b];
+
+            // No motion to resolve if both bodies are static (should never happen, but still)
+            float invMassSum = a.invMass + b.invMass;
+            if (invMassSum <= Mathf.Epsilon)
+                continue;
+            
+            // Velocity of A relative to B
+            Vector3 velBA = a.vel - b.vel;
+            Vector3 mtvDir = Vector3.Normalize(collision.mtv);
+            float mtvMag = collision.mtv.magnitude;
+
+            // How similar motion of A relative to B is to the direction we want to move A and/or B
+            float t = Vector3.Dot(velBA, mtvDir);
+
+            // Don't change velocities if object are already moving away from each other
+            // (Only change if velocities within are less than 90 degrees of each other)
+            if (t > 0.0f)
+                continue;
+
+            Vector3 frictionDirection = Vector3.Normalize(velBA - (mtvDir * t));
+            a.frictionDirection = frictionDirection;
+            if (b.Dynamic())
+                b.frictionDirection = -frictionDirection;
+        }
+    }
+
+    // Apply mtv to A and B
+    void ResolvePositions(List<HitPair> collisions)
+    {
         foreach (HitPair collision in collisions)
         {
             PhysicsBody a = bodies[collision.a];
@@ -173,9 +208,11 @@ public class PhysicsSystem
     {
         for (int i = 0; i < bodies.Length; i++)
         {
-            Color color = bodies[i].collision ? Color.red : Color.green;
-            bodies[i].gameObject.GetComponent<Renderer>().material.color = color;
-            bodies[i].transform.position = bodies[i].pos;
+            PhysicsBody body = bodies[i];
+            Color color = body.collision ? Color.red : Color.green;
+            body.GetComponent<Renderer>().material.color = color;
+            body.transform.position = bodies[i].pos;
+            Debug.DrawLine(body.pos, body.pos + body.frictionDirection * 5.0f, Color.blue);
         }
     }
 

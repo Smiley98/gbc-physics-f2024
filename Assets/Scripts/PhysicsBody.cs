@@ -32,6 +32,8 @@ public class PhysicsBody : MonoBehaviour
     // Whether the body collided with another last physics update
     public bool collision = false;
 
+    public Vector3 frictionDirection = Vector3.zero;
+
     public bool Dynamic()
     {
         return invMass == 0.0f ? false : true;
