@@ -155,8 +155,7 @@ public class PhysicsSystem
             if (b.Dynamic())
                 b.friction = -a.friction;
 
-            // TODO -- assign homework based on coefficient of friction
-            // (No homework until next week)
+            // TODO lab 8 -- render gravity, normal force, and friction
         }
     }
 
