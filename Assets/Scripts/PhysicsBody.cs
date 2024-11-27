@@ -32,7 +32,17 @@ public class PhysicsBody : MonoBehaviour
     // Whether the body collided with another last physics update
     public bool collision = false;
 
-    public Vector3 friction = Vector3.zero;
+    // Coefficient of friction (both static & kinetic for simplicity)
+    public float frictionCoefficient = 1.0f;
+
+    // Coefficient of restitution (1.0 = no energy lost, 0.0 = all energy lost)
+    public float restitutionCoefficient = 1.0f;
+
+    // Friction force as an impulse
+    public Vector3 frictionImpulse = Vector3.zero;
+
+    // Normal force as an impulse
+    public Vector3 normalImpulse = Vector3.zero;
 
     public bool Dynamic()
     {

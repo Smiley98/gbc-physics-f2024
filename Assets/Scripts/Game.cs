@@ -10,13 +10,13 @@ public class Game : MonoBehaviour
     {
         // Ground plane
         PhysicsBody ground = Instantiate(planePrefab).GetComponent<PhysicsBody>();
-        ground.transform.up = Vector3.Normalize(Vector3.right * 2.0f + Vector3.up);
+        //ground.transform.up = Vector3.Normalize(Vector3.right * 2.0f + Vector3.up);
 
         // Test sphere
         PhysicsBody sphere1 = Instantiate(spherePrefab).GetComponent<PhysicsBody>();
-        sphere1.transform.position = Vector3.up * 5.0f;
-        sphere1.drag = 0.1f;
-        //sphere1.vel = Vector3.right * 15.0f;
+        sphere1.transform.position = Vector3.up * 0.5f;
+        sphere1.vel = Vector3.right * 5.0f;
+        sphere1.frictionCoefficient = 0.5f;
 
         // Static sphere ("immovable object")
         //PhysicsBody sphere2 = Instantiate(spherePrefab).GetComponent<PhysicsBody>();

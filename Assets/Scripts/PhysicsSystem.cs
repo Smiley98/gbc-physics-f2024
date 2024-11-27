@@ -26,6 +26,8 @@ public class PhysicsSystem
         ResolveCollisions(collisions);
     }
 
+    // LE9 TODO -- Use impulse-momentum theorem to compute force from friction-force and normal-force value
+    // I = F * t (impulse = net-force * time)
     private void UpdateMotion(float dt)
     {
         for (int i = 0; i < bodies.Length; i++)
@@ -149,13 +151,29 @@ public class PhysicsSystem
             if (t > 0.0f)
                 continue;
 
-            Vector3 frictionDirection = Vector3.Normalize(velBA - (mtvDir * t));
-            float frictionMagnitude = -Vector3.Dot(velBA, frictionDirection) / invMassSum;
-            a.friction = frictionDirection * frictionMagnitude;
-            if (b.Dynamic())
-                b.friction = -a.friction;
+            float restitution = Mathf.Min(a.restitutionCoefficient, b.restitutionCoefficient);
+            float normalImpulseMagnitude = -(1.0f + restitution) * t / invMassSum;
 
-            // TODO lab 8 -- render gravity, normal force, and friction
+            // p = mv --> v = p / m
+            Vector3 normalImpulse = mtvDir * normalImpulseMagnitude;
+            a.vel += normalImpulse * a.invMass;
+            b.vel -= normalImpulse * b.invMass;
+
+            Vector3 frictionImpulseDirection = Vector3.Normalize(velBA - (mtvDir * t));
+            float frictionImpulseMagnitude = -Vector3.Dot(velBA, frictionImpulseDirection) / invMassSum;
+            float mu = Mathf.Sqrt(a.frictionCoefficient * b.frictionCoefficient); // <-- Coulomb's Law (how to combine friction coefficients)
+            frictionImpulseMagnitude = Mathf.Clamp(frictionImpulseMagnitude, -normalImpulseMagnitude * mu, normalImpulseMagnitude * mu);
+
+            // p = mv --> v = p / m
+            Vector3 frictionImpulse = frictionImpulseDirection * frictionImpulseMagnitude;
+            a.vel += frictionImpulse * a.invMass;
+            b.vel -= frictionImpulse * b.invMass;
+
+            // Update impulses for visualization (impulses applied as velocities, these are just for rendering)
+            a.normalImpulse = normalImpulse;
+            b.normalImpulse = normalImpulse;
+            a.frictionImpulse = frictionImpulse;
+            b.frictionImpulse = -frictionImpulse;
         }
     }
 
@@ -213,7 +231,13 @@ public class PhysicsSystem
             Color color = body.collision ? Color.red : Color.green;
             body.GetComponent<Renderer>().material.color = color;
             body.transform.position = bodies[i].pos;
-            Debug.DrawLine(body.pos, body.pos + body.friction * 5.0f, Color.blue);
+
+            // LE9 TODO -- Render friction & normal force instead of impulse
+            if (body.shapeType == ShapeType.SPHERE)
+            {
+                Debug.DrawLine(body.pos, body.pos + body.normalImpulse * 5.0f, Color.cyan);
+                Debug.DrawLine(body.pos, body.pos + body.frictionImpulse * 5.0f, Color.blue);
+            }
         }
     }
 
