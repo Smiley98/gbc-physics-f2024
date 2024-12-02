@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
+    // Position of launch is its centre
+    public GameObject launch;
+
     public GameObject spherePrefab;
     public GameObject planePrefab;
     PhysicsSystem physicsSystem = new PhysicsSystem();
@@ -29,11 +32,17 @@ public class Game : MonoBehaviour
         Vector3 mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouse.z = 0.0f;
 
+        // Vector FROM mouse TO launcher (AB = B - A):
+        Vector3 slingshot = launch.transform.position - mouse;
+        Debug.DrawLine(mouse, launch.transform.position, Color.cyan);
+
+
+        // Spawn sphere and launch based on slingshot
         if (Input.GetMouseButtonDown(0))
         {
             PhysicsBody sphere = Instantiate(spherePrefab).GetComponent<PhysicsBody>();
-            sphere.transform.position = mouse;
-            Debug.Log(mouse);
+            sphere.transform.position = launch.transform.position;
+            sphere.vel = slingshot * 5.0f;
         }
     }
 
