@@ -210,6 +210,7 @@ public class PhysicsSystem
     // Apply changes from GameObject to PhysicsBody
     public void PreStep()
     {
+        bodies = GameObject.FindObjectsByType<PhysicsBody>(FindObjectsSortMode.None);
         for (int i = 0; i < bodies.Length; i++)
         {
             if (bodies[i].shapeType == ShapeType.PLANE)
