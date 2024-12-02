@@ -66,5 +66,17 @@ public class Game : MonoBehaviour
         Debug.Log("Object " + a.name + " is colliding with " + b.name);
         Debug.Log("A's velocity: " + ba.vel);
         Debug.Log("B's velocity: " + bb.vel);
+
+        // Example code for destroying only if Pig
+        // Furthermore, could add additional components to separate gameplay from physics
+        // (Birds & Pigs can both be spheres, so checking by geometry alone is not enough to distinguish birds from pigs)!
+        if (ba.shapeType == ShapeType.SPHERE)
+        {
+            Destroy(a);
+        }
+        if (bb.shapeType == ShapeType.SPHERE)
+        {
+            Destroy(b);
+        }
     }
 }
