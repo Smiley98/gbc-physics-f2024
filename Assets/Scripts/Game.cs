@@ -21,9 +21,6 @@ public class Game : MonoBehaviour
         sphere1.vel = Vector3.right * 5.0f;
         sphere1.frictionCoefficient = 0.5f;
         sphere1.restitutionCoefficient = 0.0f;
-
-        // Bodies query moved to pre-step to handle dynamic add/remove
-        physicsSystem.Init();
     }
 
     // Click to spawn test sphere
@@ -36,13 +33,18 @@ public class Game : MonoBehaviour
         Vector3 slingshot = launch.transform.position - mouse;
         Debug.DrawLine(mouse, launch.transform.position, Color.cyan);
 
-
         // Spawn sphere and launch based on slingshot
         if (Input.GetMouseButtonDown(0))
         {
             PhysicsBody sphere = Instantiate(spherePrefab).GetComponent<PhysicsBody>();
             sphere.transform.position = launch.transform.position;
             sphere.vel = slingshot * 5.0f;
+        }
+
+        // Object removal test
+        if (Input.GetMouseButtonDown(1))
+        {
+            physicsSystem.Clear();
         }
     }
 
@@ -55,6 +57,6 @@ public class Game : MonoBehaviour
 
     void OnDestroy()
     {
-        physicsSystem.Quit();
+        physicsSystem.Clear();
     }
 }

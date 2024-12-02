@@ -202,9 +202,11 @@ public class PhysicsSystem
         bodies = GameObject.FindObjectsByType<PhysicsBody>(FindObjectsSortMode.None);
     }
 
-    public void Quit()
+    public void Clear()
     {
-        bodies = null;
+        for (int i = 0; i < bodies.Length; i++)
+            GameObject.Destroy(bodies[i].gameObject);
+        bodies = new PhysicsBody[0];
     }
 
     // Apply changes from GameObject to PhysicsBody
