@@ -11,16 +11,19 @@ public class Game : MonoBehaviour
 
     void Start()
     {
+        // Register collision callback
+        physicsSystem.collisionCallback = CollisionTest;
+
         // Ground plane
         PhysicsBody ground = Instantiate(planePrefab).GetComponent<PhysicsBody>();
         //ground.transform.up = Vector3.Normalize(Vector3.right * 2.0f + Vector3.up);
 
         // Test sphere
-        PhysicsBody sphere1 = Instantiate(spherePrefab).GetComponent<PhysicsBody>();
-        sphere1.transform.position = Vector3.up * 0.5f;
-        sphere1.vel = Vector3.right * 5.0f;
-        sphere1.frictionCoefficient = 0.5f;
-        sphere1.restitutionCoefficient = 0.0f;
+        //PhysicsBody sphere1 = Instantiate(spherePrefab).GetComponent<PhysicsBody>();
+        //sphere1.transform.position = Vector3.up * 0.5f;
+        //sphere1.vel = Vector3.right * 5.0f;
+        //sphere1.frictionCoefficient = 0.5f;
+        //sphere1.restitutionCoefficient = 0.0f;
     }
 
     // Click to spawn test sphere
@@ -53,5 +56,15 @@ public class Game : MonoBehaviour
         physicsSystem.PreStep();
         physicsSystem.Step(Time.fixedDeltaTime);
         physicsSystem.PostStep();
+    }
+
+    // Example of how to respond to collision (destroy pigs here)!
+    void CollisionTest(GameObject a, GameObject b)
+    {
+        PhysicsBody ba = a.GetComponent<PhysicsBody>();
+        PhysicsBody bb = b.GetComponent<PhysicsBody>();
+        Debug.Log("Object " + a.name + " is colliding with " + b.name);
+        Debug.Log("A's velocity: " + ba.vel);
+        Debug.Log("B's velocity: " + bb.vel);
     }
 }

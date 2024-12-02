@@ -9,8 +9,11 @@ public class HitPair
     public Vector3 mtv = Vector3.zero;
 }
 
+public delegate void OnCollision(GameObject a, GameObject b/*, Vector3 mtv*/);
+
 public class PhysicsSystem
 {
+    public OnCollision collisionCallback = null;
     public Vector3 gravity = Physics.gravity;
     private PhysicsBody[] bodies = null;
 
@@ -120,6 +123,17 @@ public class PhysicsSystem
 
         ResolveVelocities(collisions);
         ResolvePositions(collisions);
+
+        // Notify user a collision has occurred (might need to add more information or change where this is called)
+        if (collisionCallback != null)
+        {
+            foreach (HitPair collision in collisions)
+            {
+                GameObject a = bodies[collision.a].gameObject;
+                GameObject b = bodies[collision.b].gameObject;
+                collisionCallback(a, b);
+            }
+        }
     }
 
     // Change velocity based on friction (& restutition in the future)
@@ -192,11 +206,6 @@ public class PhysicsSystem
                 b.pos -= collision.mtv * 0.5f;
             }
         }
-    }
-
-    public void Init()
-    {
-        bodies = GameObject.FindObjectsByType<PhysicsBody>(FindObjectsSortMode.None);
     }
 
     public void Clear()
