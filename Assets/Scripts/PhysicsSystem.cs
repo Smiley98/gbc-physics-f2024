@@ -46,9 +46,6 @@ public class PhysicsSystem
                 // Apply motion
                 Integrate(ref body.vel, acc, dt);
                 Integrate(ref body.pos, body.vel, dt);
-
-                // Apply position calculated in our physics update back to Unity
-                body.transform.position = body.pos;
             }
         }
     }

@@ -54,9 +54,4 @@ public class Game : MonoBehaviour
         physicsSystem.Step(Time.fixedDeltaTime);
         physicsSystem.PostStep();
     }
-
-    void OnDestroy()
-    {
-        physicsSystem.Clear();
-    }
 }
